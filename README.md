@@ -6,15 +6,15 @@ French OpenSource adaptation of the [NewYorkTime's connections game](https://www
 
 ```mermaid
 flowchart LR
-    goGin(Go Gin Back-end)
     ReactFront(React Front-end)
+    goGin(Go Gin Back-end)
     db[(SQLite Database)]
 
     ReactFront-->goGin
     goGin-->ReactFront
 
-    ReactFront-->db
-    db-->ReactFront
+    goGin-->db
+    db-->goGin
 ```
 
 ## Back-end endpoints
@@ -69,3 +69,5 @@ Body example
     }
 ]
 ```
+### Retrieve a game
+
