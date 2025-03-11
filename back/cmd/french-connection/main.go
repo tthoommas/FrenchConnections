@@ -22,11 +22,15 @@ func main() {
 			if internal.DEBUG {
 				slog.SetLogLoggerLevel(slog.LevelDebug)
 				slog.Debug(fmt.Sprintf("DEBUG -> %t\n", internal.DEBUG))
+			} else {
+				slog.SetLogLoggerLevel(slog.LevelError)
 			}
 
 			slog.Debug(fmt.Sprintf("API_DOMAIN -> %s\n", internal.API_DOMAIN))
 			slog.Debug(fmt.Sprintf("API_IP -> %s\n", internal.API_IP))
 			slog.Debug(fmt.Sprintf("API_PORT -> %v\n", internal.API_PORT))
+
+			// Add server start
 
 			return nil
 		},
