@@ -32,7 +32,7 @@ Body example
 ```json
 {
     "createdBy": "sami",
-    "game": [
+    "gameCategories": [
         {
             "categoryTitle": "FAUX",
             "words": [
@@ -50,7 +50,7 @@ Body example
                 "DELICATE",
                 "SPIN"
             ]
-        }
+        },
         {
             "categoryTitle": "WORDS SAID FREQUENTLY IN THE “BILL AND TED” MOVIES",
             "words": [

@@ -2,11 +2,14 @@ package main
 
 import (
 	"FrenchConnections/internal"
+	"FrenchConnections/internal/endpoints"
 	"context"
 	"fmt"
 	"log"
 	"log/slog"
 	"os"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/urfave/cli/v3"
 )
@@ -17,8 +20,6 @@ func main() {
 		Usage:       "French-Connection Backend Server",
 		Description: "Server that runs the logic for the french connection adaption",
 		Action: func(context.Context, *cli.Command) error {
-			fmt.Println("Hello friend!")
-
 			if internal.DEBUG {
 				slog.SetLogLoggerLevel(slog.LevelDebug)
 				slog.Debug(fmt.Sprintf("DEBUG -> %t\n", internal.DEBUG))
@@ -30,7 +31,13 @@ func main() {
 			slog.Debug(fmt.Sprintf("API_IP -> %s\n", internal.API_IP))
 			slog.Debug(fmt.Sprintf("API_PORT -> %v\n", internal.API_PORT))
 
-			// Add server start
+			router := gin.Default()
+
+			router.POST("/game", endpoints.Create)
+			router.GET("/game/:gameId", endpoints.Retrieve)
+			router.POST("/game/:gameId/guess", endpoints.Guess)
+
+			router.Run(fmt.Sprintf("%s:%d", internal.API_IP, internal.API_PORT))
 
 			return nil
 		},
@@ -60,6 +67,12 @@ func main() {
 				Aliases:     []string{"d"},
 				Value:       false,
 				Destination: &internal.DEBUG,
+			},
+			&cli.StringFlag{
+				Name:        "db-path",
+				Aliases:     []string{"db"},
+				Value:       "./data.db",
+				Destination: &internal.DB_PATH,
 			},
 		},
 	}
