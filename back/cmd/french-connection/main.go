@@ -3,6 +3,7 @@ package main
 import (
 	"FrenchConnections/internal"
 	"FrenchConnections/internal/endpoints"
+	"FrenchConnections/internal/middlewares"
 	"context"
 	"fmt"
 	"log"
@@ -32,6 +33,8 @@ func main() {
 			slog.Debug(fmt.Sprintf("API_PORT -> %v\n", internal.API_PORT))
 
 			router := gin.Default()
+
+			router.Use(middlewares.CORSMiddleware())
 
 			router.POST("/game", endpoints.Create)
 			router.GET("/game/:gameId", endpoints.Retrieve)

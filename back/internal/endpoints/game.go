@@ -34,8 +34,8 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	if len(gameToCreate.CreatedBy) <= 2 {
-		errMsg := fmt.Sprintf("Invalid creator name. Must be at least 2 characters was %d", len(gameToCreate.CreatedBy))
+	if len(gameToCreate.CreatedBy) == 0 {
+		errMsg := "Invalid creator name."
 		slog.Debug(errMsg)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errMsg})
 		return
@@ -145,19 +145,15 @@ func Guess(c *gin.Context) {
 	for _, category := range game.GameCategories {
 		i := 0
 		for _, word := range category.Words {
-			if !utils.Contains(proposition.Proposition, word) {
-				break
-			} else {
+			if utils.Contains(proposition.Proposition, word) {
 				i += 1
 			}
 		}
 		if i == 3 {
 			guessResponse.IsOneAway = true
-			break
 		} else if i == 4 {
 			guessResponse.Success = true
 			guessResponse.CategoryTitle = category.CategoryTitle
-			break
 		}
 	}
 

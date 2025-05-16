@@ -40,7 +40,7 @@ func TestCreateGameHandler(t *testing.T) {
 			Name:                 "Wrong creator",
 			RequestBody:          `{"createdBy":"","gameCategories":[{"categoryTitle":"FAUX","words":["ARTIFICIAL","FAKE","IMITATION","MOCK"]},{"categoryTitle":"WASHING MACHINE CYCLES\/SETTINGS","words":["BULKY","COTTON","DELICATE","SPIN"]},{"categoryTitle":"WORDS SAID FREQUENTLY IN THE \u201cBILL AND TED\u201d MOVIES","words":["BOGUS","DUDE","EXCELLENT","TOTALLY"]},{"categoryTitle":"___BOX","words":["CHATTER","JUKE","SHADOW","SOAP"]}]}`,
 			ExpectedStatus:       http.StatusBadRequest,
-			ExpectedResponseBody: `{"error":"Invalid creator name. Must be at least 2 characters was 0"}`,
+			ExpectedResponseBody: `{"error":"Invalid creator name."}`,
 		},
 		{
 			Name:                 "Empty category title",
