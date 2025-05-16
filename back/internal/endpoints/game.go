@@ -9,11 +9,22 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/utils"
 )
+
+func List(c *gin.Context) {
+	var games []models.Game
+	if result := db.GetDBClient().Find(&games); result.Error != nil {
+		slog.Debug("Error while fetching games", "error", result.Error)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "couldn't fetch games"})
+		return
+	}
+	c.JSON(http.StatusOK, games)
+}
 
 func Create(c *gin.Context) {
 	var gameToCreate models.Game
@@ -52,12 +63,13 @@ func Create(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errMsg})
 			return
 		}
-		for _, word := range cat.Words {
+		for i, word := range cat.Words {
 			if len(word) == 0 {
 				errMsg := fmt.Sprintf("invalid game provided, words must be at least one character, the category [%s] contains an empty word", cat.CategoryTitle)
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errMsg})
 				return
 			}
+			cat.Words[i] = strings.ToUpper(cat.Words[i])
 			_, exists := seenWords[word]
 			if exists {
 				errMsg := fmt.Sprintf("invalid game provided, words must be unique but [%s] is present several times", word)
@@ -145,7 +157,7 @@ func Guess(c *gin.Context) {
 	for _, category := range game.GameCategories {
 		i := 0
 		for _, word := range category.Words {
-			if utils.Contains(proposition.Proposition, word) {
+			if utils.Contains(proposition.Proposition, strings.ToUpper(word)) {
 				i += 1
 			}
 		}

@@ -4,10 +4,20 @@ interface WordProps {
     selected: boolean
     editable?: boolean
     onWordEdited?: (newWord: string) => void
+    isWrongGuess?: boolean
+    isOneAway?: boolean
 }
 
-export default function Word({ word, onClick, selected, editable = false, onWordEdited = () => {} }: WordProps) {
-    return <div className={`ratio ratio-1x1 border border-2 rounded-3 fw-medium ${selected ? "bg-dark-subtle" : "bg-light"}`}
+export default function Word({ word, onClick, selected, editable = false, onWordEdited = () => {}, isWrongGuess = false, isOneAway = false }: WordProps) {
+    let bg = "bg-light"
+    if (selected && isWrongGuess) {
+        bg = "bg-danger-subtle"
+    } else if (selected && isOneAway){
+         bg = "bg-warning-subtle"
+    } else if (selected) {
+        bg = "bg-dark-subtle"
+    }
+    return <div className={`ratio ratio-1x1 border border-2 rounded-3 fw-medium ${bg}`}
         onClick={onClick}>
         <div className="d-flex align-items-center justify-content-center">
             {

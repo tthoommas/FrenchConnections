@@ -16,6 +16,49 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+func TestListGamesHandler(t *testing.T) {
+	r := gin.Default()
+	r.GET("/game/list", endpoints.List)
+	testGame := &models.Game{
+		CreatedBy: "sami",
+		GameCategories: []models.GameCategory{
+			{
+				CategoryTitle: "Category A",
+				Words:         []string{"A", "B", "C", "D"},
+			},
+			{
+				CategoryTitle: "Category B",
+				Words:         []string{"E", "F", "G", "H"},
+			},
+			{
+				CategoryTitle: "Category C",
+				Words:         []string{"I", "J", "K", "L"},
+			},
+			{
+				CategoryTitle: "Category D",
+				Words:         []string{"M", "N", "O", "P"},
+			},
+		}}
+
+	db.GetDBClient().Migrator().DropTable(&models.Game{}, &models.GameCategory{})
+	db.GetDBClient().AutoMigrate(&models.Game{}, &models.GameCategory{})
+	db.GetDBClient().Create(&testGame)
+	testGame.ID = 0
+	db.GetDBClient().Create(&testGame)
+	testGame.ID = 0
+	db.GetDBClient().Create(&testGame)
+
+	req, _ := http.NewRequest("GET", "/game/list", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	responseData, _ := io.ReadAll(w.Body)
+	expectedResponse := `\[{"id":1,"createdAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","updatedAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","createdBy":"sami"},{"id":2,"createdAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","updatedAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","createdBy":"sami"},{"id":3,"createdAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","updatedAt":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}[+-]\d{2}:\d{2}","createdBy":"sami"}]`
+	if matched, err := regexp.MatchString(expectedResponse, string(responseData)); !matched || err != nil {
+		assert.Error(t, fmt.Errorf("response body did not match expected"), expectedResponse, string(responseData))
+	}
+}
+
 func TestCreateGameHandler(t *testing.T) {
 
 	testCases := []struct {

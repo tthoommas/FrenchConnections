@@ -1,5 +1,6 @@
 export default interface ShuffledGame {
+    id: number
     createdBy: string
-    creationDate: string
+    createdAt: string
     game: string[]
 }

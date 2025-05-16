@@ -36,6 +36,7 @@ func main() {
 
 			router.Use(middlewares.CORSMiddleware())
 
+			router.GET("/game/list", endpoints.List)
 			router.POST("/game", endpoints.Create)
 			router.GET("/game/:gameId", endpoints.Retrieve)
 			router.POST("/game/:gameId/guess", endpoints.Guess)

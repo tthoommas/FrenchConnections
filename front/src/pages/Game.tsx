@@ -13,6 +13,7 @@ export default function GamePage() {
     let [game, setGame] = useState<ShuffledGame | undefined>(undefined)
     const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set())
     // Keep a set of 'one away' combinations already found
+    const [wrongGuess, setWrongGuess] = useState<Set<string>[]>([])
     const [oneAwaySets, setOneAwaySets] = useState<Set<string>[]>([])
     const [foundCategories, setFoundCategories] = useState<Category[]>([])
     const [tentatives, setTentatives] = useState(0)
@@ -31,7 +32,7 @@ export default function GamePage() {
         })
     }, [params.gameId])
 
-    const isAmongOneAway = (proposition: Set<string>, knownOneAways: Set<string>[]): boolean => {
+    const isAmongGuess = (proposition: Set<string>, knownOneAways: Set<string>[]): boolean => {
         for (let oneAwaySet of knownOneAways) {
             if (eqSet(proposition, oneAwaySet)) {
                 return true
@@ -52,14 +53,23 @@ export default function GamePage() {
             }).then((guessResponse: GuessResponse) => {
                 setTentatives((old) => old + 1)
                 if (guessResponse.isOneAway) {
-                    if (!isAmongOneAway(selectedWords, oneAwaySets)) {
+                    // Remember this one away
+                    if (!isAmongGuess(selectedWords, oneAwaySets)) {
                         setOneAwaySets((oneAways) => [...oneAways, new Set(selectedWords)])
                     }
                 } else if (guessResponse.success) {
+                    // Rememner this success
                     setFoundCategories((alreadyFound) => {
                         return [...alreadyFound, { categoryTitle: guessResponse.categoryTitle, words: Array.from(selectedWords) }]
                     })
                     setSelectedWords(() => new Set())
+                } else {
+                    // Remember this wrong guess
+                    if (!isAmongGuess(selectedWords, wrongGuess)) {
+                        setWrongGuess((wrongGuesses) => {
+                            return [...wrongGuesses, new Set(selectedWords)]
+                        })
+                    }
                 }
             })
         }
@@ -82,7 +92,8 @@ export default function GamePage() {
         return <Loading message="Chargement du jeu ..." />
     }
 
-    let showOneAway = isAmongOneAway(selectedWords, oneAwaySets)
+    let isWrongGuess = isAmongGuess(selectedWords, wrongGuess)
+    let isOneAway = isAmongGuess(selectedWords, oneAwaySets)
     let foundWords = foundCategories.flatMap(category => category.words)
     let done = foundCategories.length === 4
 
@@ -100,13 +111,18 @@ export default function GamePage() {
                 }
             </div>
         </div>
-        <div className={`row my-3 ${!showOneAway ? "invisible" : ""}`}>
+        <div className={`row my-3 ${!isOneAway ? "invisible" : ""}`}>
             <div className="col text-center">
                 <span className="blink bg-dark-subtle p-1 border border-2 rounded-2">One away</span>
             </div>
         </div>
         <div className="row">
-            <Grid words={game.game.filter((word) => !foundWords.includes(word))} onWordClicked={onWordClicked} selectedWords={selectedWords} />
+            <Grid
+                words={game.game.filter((word) => !foundWords.includes(word))}
+                onWordClicked={onWordClicked}
+                selectedWords={selectedWords}
+                isWrongGuess={isWrongGuess}
+                isOneAway={isOneAway} />
         </div>
         {
             <div className="row">

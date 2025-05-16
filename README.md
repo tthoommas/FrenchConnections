@@ -19,6 +19,23 @@ flowchart LR
 
 ## Back-end endpoints
 
+### List all games
+
+This endpoint can be used to retrieve a full list of all existing games.
+
+| HTTP Method | Path       | Content-Type     |
+| ----------- | ---------- | ---------------- |
+| GET         | /game/list | application/json |
+
+Return result: 
+
+
+```json
+{
+    "gameIds": [1, 2, 3, 4, 5]
+}
+```
+
 ### Create a new game
 
 This endpoint allows anybody to create a new game. It returns a unique created ID pointing to the game.
@@ -73,11 +90,11 @@ Body example
 }
 ```
 
-Return result : a UUIDv4 identifying the game
+Return result : an int identifying the game
 
 ```json
 {
-    "gameId": "a521c67d-f445-435a-abe2-cc95cddcae13"
+    "gameId": 42
 }
 ```
 
